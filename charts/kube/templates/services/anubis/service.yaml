@@ -9,7 +9,6 @@ spec:
   type: {{ .Values.services.anubis.service.type }}
   ports:
     - port: {{ .Values.services.anubis.service.port }}
-      nodePort: {{ .Values.services.anubis.service.nodePort }}
       targetPort: http
       protocol: TCP
       name: http

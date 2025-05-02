@@ -3,7 +3,7 @@ _defaults: &defaults
   replicaCount: 1
   enabled: true
   service:
-    type: NodePort
+    type: LoadBalancer
     port: 80
   resources:
     limits:
@@ -32,7 +32,7 @@ podLabels: {}
 podSecurityContext: {}
 securityContext: {}
 service:
-  type: NodePort
+  type: LoadBalancer
   port: 80
   nodePort: 30080
 ingress:
@@ -76,7 +76,7 @@ services:
       tag: "latest"
       pullPolicy: Always
     service:
-      type: NodePort
+      type: LoadBalancer
       port: 80
     resources:
       limits:
@@ -94,7 +94,7 @@ services:
       tag: "latest"
       pullPolicy: Always
     service:
-      type: NodePort
+      type: LoadBalancer
       port: 80
     resources:
       limits:
@@ -112,7 +112,7 @@ services:
       tag: "latest"
       pullPolicy: Always
     service:
-      type: NodePort
+      type: LoadBalancer
       port: 80
     resources:
       limits:
@@ -130,7 +130,7 @@ services:
       tag: "latest"
       pullPolicy: Always
     service:
-      type: NodePort
+      type: LoadBalancer
       port: 80
     resources:
       limits:
