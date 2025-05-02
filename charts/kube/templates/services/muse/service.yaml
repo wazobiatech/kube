@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-muse
+  labels:
+    {{- include "kube.labels" . | nindent 4 }}
+    app.kubernetes.io/component: muse
+spec:
+  type: {{ .Values.services.muse.service.type }}
+  ports:
+    - port: {{ .Values.services.muse.service.port }}
+      nodePort: {{ .Values.services.muse.service.nodePort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "kube.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: muse

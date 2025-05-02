@@ -1,0 +1,82 @@
+services:
+  ambrosia:
+    replicaCount: 1
+    service:
+      type: NodePort
+      port: 80
+      nodePort: 30081
+    ingress:
+      host: "ambrosia.sytbuilder.com"
+      enabled: true
+    resources:
+      limits:
+        cpu: 300m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+  anubis:
+    replicaCount: 1
+    service:
+      type: NodePort
+      port: 80
+      nodePort: 30082
+    ingress:
+      host: "anubis.sytbuilder.com"
+      enabled: true
+    resources:
+      limits:
+        cpu: 300m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+  hermes:
+    replicaCount: 1
+    service:
+      type: NodePort
+      port: 80
+      nodePort: 30083
+    ingress:
+      host: "hermes.sytbuilder.com"
+      enabled: true
+    resources:
+      limits:
+        cpu: 300m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+  muse:
+    replicaCount: 1
+    service:
+      type: NodePort
+      port: 80
+      nodePort: 30084
+    ingress:
+      host: "muse.sytbuilder.com"
+      enabled: true
+    resources:
+      limits:
+        cpu: 300m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30080 # Specific port for main service
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  tls: []

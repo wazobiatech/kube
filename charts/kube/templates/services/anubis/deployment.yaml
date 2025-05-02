@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-anubis
+  labels:
+    {{- include "kube.labels" . | nindent 4 }}
+    app.kubernetes.io/component: anubis
+spec:
+  replicas: {{ .Values.services.anubis.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kube.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: anubis
+  template:
+    metadata:
+      labels:
+        {{- include "kube.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: anubis
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      initContainers:
+        - name: copy-app-files
+          image: wazobiatech/anubis:latest
+          command: ['sh', '-c', 'mkdir -p /app-temp/public && cp -r /var/www/html/. /app-temp/']
+          volumeMounts:
+          - name: app-code
+            mountPath: /app-temp
+      containers:
+        # PHP-FPM container
+        - name: {{ .Chart.Name }}-anubis
+          image: "{{ .Values.services.anubis.image.repository }}:{{ .Values.services.anubis.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.services.anubis.image.pullPolicy }}
+          volumeMounts:
+            - name: app-code
+              mountPath: /var/www/html
+          ports:
+            - containerPort: 9000
+              name: php-fpm
+          # livenessProbe:
+          #   exec:
+          #     command: ["php", "artisan", "health:check", "--quiet"]
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 90
+          #   timeoutSeconds: 10
+          #   failureThreshold: 3
+          # readinessProbe:
+          #   exec:
+          #     command: ["php", "artisan", "health:check", "--quiet"]
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 90
+          #   timeoutSeconds: 10
+          #   failureThreshold: 3
+          resources:
+            {{- toYaml .Values.services.anubis.resources | nindent 12 }}
+
+        # Nginx container
+        - name: nginx
+          image: nginx:1.25
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: app-code
+              mountPath: /var/www/html
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      volumes:
+        - name: app-code
+          emptyDir: {}
+        - name: nginx-config
+          configMap:
+            name: anubis-nginx-config

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-hermes
+  labels:
+    {{- include "kube.labels" . | nindent 4 }}
+    app.kubernetes.io/component: hermes
+spec:
+  type: {{ .Values.services.hermes.service.type }}
+  ports:
+    - port: {{ .Values.services.hermes.service.port }}
+      nodePort: {{ .Values.services.hermes.service.nodePort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "kube.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: hermes

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: muse-nginx-config
+data:
+  default.conf: |
+    server {
+        listen 80;
+
+        index index.php index.html;
+        root /var/www/html/public;
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ \.php$ {
+            include fastcgi_params;
+            fastcgi_pass localhost:9000;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
+
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            expires max;
+            log_not_found off;
+        }
+
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log debug;
+    }

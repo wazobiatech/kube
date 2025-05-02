@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-muse
+  labels:
+    {{- include "kube.labels" . | nindent 4 }}
+    app.kubernetes.io/component: muse
+spec:
+  replicas: {{ .Values.services.muse.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kube.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: muse
+  template:
+    metadata:
+      labels:
+        {{- include "kube.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: muse
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      initContainers:
+        - name: copy-app-files
+          image: wazobiatech/muse:latest
+          command: ['sh', '-c', 'mkdir -p /app-temp/public && cp -r /var/www/html/. /app-temp/']
+          volumeMounts:
+          - name: app-code
+            mountPath: /app-temp
+      containers:
+        # PHP-FPM container
+        - name: {{ .Chart.Name }}-muse
+          image: "{{ .Values.services.muse.image.repository }}:{{ .Values.services.muse.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.services.muse.image.pullPolicy }}
+          volumeMounts:
+            - name: app-code
+              mountPath: /var/www/html
+          ports:
+            - containerPort: 9000
+              name: php-fpm
+          # livenessProbe:
+          #   exec:
+          #     command: ["php", "artisan", "health:check", "--quiet"]
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 90
+          #   timeoutSeconds: 10
+          #   failureThreshold: 3
+          # readinessProbe:
+          #   exec:
+          #     command: ["php", "artisan", "health:check", "--quiet"]
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 90
+          #   timeoutSeconds: 10
+          #   failureThreshold: 3
+          resources:
+            {{- toYaml .Values.services.muse.resources | nindent 12 }}
+
+        # Nginx container
+        - name: nginx
+          image: nginx:1.25
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: app-code
+              mountPath: /var/www/html
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      volumes:
+        - name: app-code
+          emptyDir: {}
+        - name: nginx-config
+          configMap:
+            name: muse-nginx-config
