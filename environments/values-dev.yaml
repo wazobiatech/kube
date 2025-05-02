@@ -67,11 +67,6 @@ services:
         cpu: 100m
         memory: 128Mi
 
-service:
-  type: NodePort
-  port: 80
-  nodePort: 30080 # Specific port for main service
-
 ingress:
   enabled: true
   className: "nginx"

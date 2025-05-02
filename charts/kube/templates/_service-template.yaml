@@ -1,9 +1,0 @@
-# templates/_service-template.yaml
-{{- define "kube.service" -}}
-{{- $root := .root -}}
-{{- $name := .name -}}
-{{- $service := .service -}}
-apiVersion: apps/v1
-kind: Deployment
-# etc...
-{{- end -}}
