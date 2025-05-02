@@ -18,6 +18,6 @@ kubectl wait --namespace ingress-nginx \
 
 # Then deploy/upgrade the application
 echo "Deploying application for environment: ${ENV}..."
-helm upgrade --install kube ../charts/kube \
+helm upgrade --install hivedeck ../charts/kube \
   -f ../environments/values-${ENV}.yaml \
   --namespace kube-${ENV} --create-namespace
