@@ -1,11 +1,9 @@
 #!/bin/bash
 ENV=${1:-dev}
 
-# First install/upgrade NGINX Ingress Controller
-echo "Installing NGINX Ingress Controller..."
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
-helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+# First install/upgrade custom NGINX Ingress Controller
+echo "Installing custom NGINX Ingress Controller..."
+helm upgrade --install ingress-nginx ../charts/ingress \
   --namespace ingress-nginx \
   --create-namespace
 

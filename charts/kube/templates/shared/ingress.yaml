@@ -5,10 +5,12 @@ metadata:
   name: {{ include "kube.fullname" . }}
   labels:
     {{- include "kube.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
+    {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
+    # Force HTTPS redirection
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   {{- with .Values.ingress.className }}
   ingressClassName: {{ . }}

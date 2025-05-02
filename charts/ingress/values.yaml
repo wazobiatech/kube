@@ -1,0 +1,15 @@
+controller:
+  service:
+    type: LoadBalancer
+    ports:
+      http: 80
+      https: 443
+  config:
+    use-forwarded-headers: "true"
+    enable-real-ip: "true"
+    proxy-buffer-size: "128k"
+    proxy-body-size: "50m"
+    server-tokens: "false"
+    proxy-real-ip-cidr: "0.0.0.0/0"
+    ssl-protocols: "TLSv1.2 TLSv1.3"
+    ssl-ciphers: "HIGH:!aNULL:!MD5"
